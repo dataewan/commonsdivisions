@@ -35,7 +35,11 @@ def getdivisionpage(pageid):
         another page to come
     """
     url = 'http://lda.data.parliament.uk/commonsdivisions.json'
-    r = requests.get(url, params={'_page': pageid})
+    r = requests.get(url, params={
+        '_page': pageid,
+        # 500 is the maximum
+        '_pageSize': 500
+    })
     result = r.json()['result']
 
     # check if there is another page to come
@@ -84,14 +88,15 @@ def getdivisions():
     f, writer = getwriter()
 
     # first record is where we start from
-    i = 1
+    i = 0
     d = getdivisionpage(i)
+    outputpage(d, writer)
     while d['anotherpage']:
-        outputpage(d, writer)
-        i += 1
         print(i)
+        i += 1
         time.sleep(random.random() * 0.2)
         d = getdivisionpage(i)
+        outputpage(d, writer)
     f.close()
 
 
